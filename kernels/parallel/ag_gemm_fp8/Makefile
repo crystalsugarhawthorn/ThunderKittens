@@ -1,12 +1,14 @@
 # You must set the environment variable GPU
-# export GPU=H100 | B200
+# export GPU=H100 | B200 | RTX5070
 
 ifeq ($(GPU),B200)
 SRC := ag_gemm_fp8_b200.cu
 else ifeq ($(GPU),H100)
 $(error H100 is unsupported.)
+else ifeq ($(GPU),RTX5070)
+SRC := ag_gemm_fp8_b200.cu
 else
-$(error Unsupported GPU: $(GPU). Please set GPU to B200 or H100.)
+$(error Unsupported GPU: $(GPU). Please set GPU to B200, H100, or RTX5070.)
 endif
 
 OUT := _C$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")

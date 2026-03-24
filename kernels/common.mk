@@ -1,5 +1,5 @@
 # Example usage:
-#   GPU := H100 | B200 | B300
+#   GPU := H100 | B200 | B300 | RTX5070
 #   SRC := kernel.cu
 #   OUT := kernel
 #   CMD := ./kernel
@@ -7,13 +7,13 @@
 #   include common.mk
 
 # These should be set by the including Makefile
-GPU ?= NOT_SET # H100 | B200 | B300
+GPU ?= NOT_SET # H100 | B200 | B300 | RTX5070
 SRC ?= NOT_SET # ex. my_kernel.cu
 OUT ?= NOT_SET # ex. _C$(shell python3 -c "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
 CMD ?= NOT_SET # ex. ./my_kernel, OMP_NUM_THREADS=1 torchrun --nproc_per_node=8 benchmark.py
 CONFIG ?= NOT_SET # standalone | python | pytorch
 ifeq ($(GPU),NOT_SET)
-$(error GPU is not set. Please set GPU to H100, B200, or B300)
+$(error GPU is not set. Please set GPU to H100, B200, B300, or RTX5070)
 endif
 ifeq ($(SRC),NOT_SET)
 $(error SRC is not set. Please set SRC to the entry .cu file)
@@ -92,8 +92,10 @@ else ifeq ($(GPU),H100)
 NVCCFLAGS += -DKITTENS_HOPPER -gencode arch=compute_90a,code=sm_90a
 else ifeq ($(GPU),A100)
 NVCCFLAGS += -DKITTENS_AMPERE -gencode arch=compute_80,code=sm_80
+else ifeq ($(GPU),RTX5070)
+NVCCFLAGS += -DKITTENS_BLACKWELL -gencode arch=compute_120,code=sm_120
 else
-$(error Unsupported GPU: $(GPU). Please set GPU to H100, B200, or B300.)
+$(error Unsupported GPU: $(GPU). Please set GPU to H100, A100, B200, B300, or RTX5070.)
 endif
 
 all: $(OUT)
